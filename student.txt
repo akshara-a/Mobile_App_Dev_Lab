@@ -1,0 +1,143 @@
+You are assigned to create a student detail management application in React Native that employs stack navigation. The app consists of two screens: the first screen gathers form details about the students, and the second screen displays these form entries upon submission. 
+Explain how to setup a React Native Application
+Enumerate the components and form fields you would use to gather information such as student name, class, age, register number, and so on. 
+Implement the idea of stack navigation to your application
+Discuss the specific hover animation you intend to apply to the submit button
+
+Step - 1: Run npx create-expo-app studentapp
+Step-2: Run cd studentapp 
+Step-3: Run npm install @react-navigation/native @react-navigation/native-stack in the terminal 
+Step-4: Since it is an expo managed project, run npx expo install react-native-screens react-native-safe-area-context in the terminal 
+
+App.js
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import StudentFormScreen from './screens/StudentFormScreen';
+import SubmissionScreen from './screens/SubmissionScreen';
+
+
+const Stack = createNativeStackNavigator();
+
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="SForm">
+        <Stack.Screen name="StudentForm" component={StudentFormScreen} />
+        <Stack.Screen name="Submission" component={SubmissionScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+StudentFormScreen.js 
+import { useState } from 'react';
+import { View, StyleSheet, TextInput, Button } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
+
+export default function BookFormScreen() {
+  const navigation = useNavigation();
+  const [name, setName] = useState('');
+  const [sclass, setSclass] = useState('');
+  const [age, setAge] = useState('');
+
+
+  const handleSubmit = () => {
+    // Navigate to the SubmissionScreen and pass the form data as params
+    navigation.navigate('Submission', { name, sclass, age });
+  };
+
+
+  return (
+    <View style={styles.container}>
+    <View style={styles.subcontainer}>
+    <TextInput
+        value={name}
+        onChangeText={(text) => setName(text)}
+        placeholder="Enter student name"
+        style = {styles.input}
+      />
+
+
+      <TextInput
+        value={sclass}
+        onChangeText={(text) => setSclass(text)}
+        placeholder="Enter class"
+        style = {styles.input}
+      />
+
+
+      <TextInput
+        value={age}
+        onChangeText={(text) => setAge(text)}
+        placeholder="Enter age"
+        style = {styles.input}
+      />
+
+
+      <Button
+        title="Submit"
+        onPress={handleSubmit}
+        style = {styles.btn}
+      />
+    </View>
+     
+    </View>
+  );
+}
+
+
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#000',
+      alignItems: 'center',
+      justifyContent: 'center',
+  },
+  subcontainer:{
+    backgroundColor: 'white',
+    padding: 30,
+    borderRadius: 5,
+  },
+  input: {
+    padding: 20,
+    width: 250,
+  }
+});
+
+SubmissionScreen.js
+import { View, Text, StyleSheet } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+
+
+export default function SubmissionScreen() {
+  const route = useRoute();
+  const { name, sclass, age } = route.params;
+
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.display}>Submitted Student Details:</Text>
+      <Text style={styles.display}>Name: {name}</Text>
+      <Text style={styles.display}>Class: {sclass}</Text>
+      <Text style={styles.display}>Age: {age}</Text>
+    </View>
+  );
+}
+
+
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#000',
+      alignItems: 'center',
+      justifyContent: 'center',
+  },
+  display:{
+    color: 'white',
+  }
+});
+
+
+
