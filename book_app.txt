@@ -1,0 +1,149 @@
+You are assigned to create a book application in React Native that employs stack navigation. The app consists of two screens: the first screen gathers form details about a book (e.g., title, author, genre), and the second screen displays these form entries upon submission. 
+Explain how to set up a React Native Application
+Enumerate the components and form fields you would use to gather information such as book title, author, and genre.
+Implement the idea of stack navigation to your application
+Discuss the specific hover animation you intend to apply to the submit button
+
+Step - 1: Run npx create-expo-app bookapp
+Step-2: Run cd bookapp 
+Step-3: Run npm install @react-navigation/native @react-navigation/native-stack in the terminal 
+Step-4: Since it is an expo managed project, run npx expo install react-native-screens react-native-safe-area-context in the terminal 
+
+App.js 
+import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import BookFormScreen from './screens/BookFormScreen';
+import SubmissionScreen from './screens/SubmissionScreen';
+
+
+const Stack = createNativeStackNavigator();
+
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="BookForm">
+        <Stack.Screen name="BookForm" component={BookFormScreen} />
+        <Stack.Screen name="Submission" component={SubmissionScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+BookFormScreen.js
+import { useState } from 'react';
+import { View, StyleSheet, TextInput, Button } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
+
+export default function BookFormScreen() {
+  const navigation = useNavigation();
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [genre, setGenre] = useState('');
+
+
+  const handleSubmit = () => {
+    // Navigate to the SubmissionScreen and pass the form data as params
+    navigation.navigate('Submission', { title, author, genre });
+  };
+
+
+  return (
+    <View style={styles.container}>
+    <View style={styles.subcontainer}>
+    <TextInput
+        value={title}
+        onChangeText={(text) => setTitle(text)}
+        placeholder="Enter book title"
+        style = {styles.input}
+      />
+
+
+      <TextInput
+        value={author}
+        onChangeText={(text) => setAuthor(text)}
+        placeholder="Enter author"
+        style = {styles.input}
+      />
+
+
+      <TextInput
+        value={genre}
+        onChangeText={(text) => setGenre(text)}
+        placeholder="Enter genre"
+        style = {styles.input}
+      />
+
+
+      <Button
+        title="Submit"
+        onPress={handleSubmit}
+        style = {styles.btn}
+      />
+    </View>
+     
+    </View>
+  );
+}
+
+
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#000',
+      alignItems: 'center',
+      justifyContent: 'center',
+  },
+  subcontainer:{
+    backgroundColor: 'white',
+    padding: 30,
+    borderRadius: 5,
+  },
+  input: {
+    padding: 20,
+    width: 250,
+  }
+});
+
+SubmissionScreen.js
+import { View, Text, StyleSheet } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+
+
+export default function SubmissionScreen() {
+  const route = useRoute();
+  const { title, author, genre } = route.params;
+
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.display}>Submitted Book Details:</Text>
+      <Text style={styles.display}>Title: {title}</Text>
+      <Text style={styles.display}>Author: {author}</Text>
+      <Text style={styles.display}>Genre: {genre}</Text>
+    </View>
+  );
+}
+
+
+const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+      backgroundColor: '#000',
+      alignItems: 'center',
+      justifyContent: 'center',
+  },
+  display:{
+    color: 'white',
+  }
+});
+
+
+
+
+
+
+
+
