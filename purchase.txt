@@ -1,0 +1,120 @@
+Step - 1: Run npx create-expo-app purchase
+Step-2: Run cd blog
+step 3: npm install @react-native-picker/picker
+
+
+
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, TextInput, Button, Alert, Switch } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+
+export default function App() {
+  const [theme, setTheme] = useState('light');
+  const [productPrice, setProductPrice] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  const calculateTotal = () => {
+    let multiplier = 1;
+    if (paymentMethod === 'creditCard') {
+      multiplier = 1.05; // Apply a 5% fee for credit card payments
+    }
+
+    const totalPrice = parseFloat(productPrice) * multiplier;
+    setTotalAmount(totalPrice.toFixed(2));
+
+    Alert.alert(
+      'Payment Details',
+      `Product Price: $${productPrice}\nPayment Method: ${paymentMethod}\nTotal Amount: $${totalAmount}`,
+    );
+  };
+
+  return (
+    <View style={[styles.container, theme === 'dark' && styles.darkContainer]}>
+      <Text style={styles.title}>Payment Calculator</Text>
+      <View style={[styles.calculatorContainer, theme === 'dark' && styles.darkCalculatorContainer]}>
+        <TextInput
+          style={[styles.input, theme === 'dark' && styles.darkInput]}
+          placeholder="Enter Product Price"
+          keyboardType="numeric"
+          value={productPrice}
+          onChangeText={(text) => setProductPrice(text)}
+        />
+        <Picker
+          selectedValue={paymentMethod}
+          style={[styles.picker, theme === 'dark' && styles.darkPicker]}
+          onValueChange={(itemValue) => setPaymentMethod(itemValue)}
+        >
+          <Picker.Item label="Cash" value="cash" />
+          <Picker.Item label="Credit Card" value="creditCard" />
+        </Picker>
+        <Button title="Calculate Total" onPress={calculateTotal} />
+      </View>
+      <View style={styles.themeToggleContainer}>
+        <Text style={styles.themeText}>Dark Theme</Text>
+        <Switch
+          value={theme === 'dark'}
+          onValueChange={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  darkContainer: {
+    backgroundColor: '#333',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  calculatorContainer: {
+    width: '80%',
+    padding: 20,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+  },
+  darkCalculatorContainer: {
+    backgroundColor: '#444',
+  },
+  input: {
+    width: '100%',
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+  },
+  darkInput: {
+    backgroundColor: '#666',
+    color: '#fff',
+  },
+  picker: {
+    width: '100%',
+    height: 40,
+    marginBottom: 10,
+  },
+  darkPicker: {
+    backgroundColor: '#666',
+    color: '#fff',
+  },
+  themeToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 20,
+  },
+  themeText: {
+    marginRight: 10,
+    color: '#333',
+  },
+});
