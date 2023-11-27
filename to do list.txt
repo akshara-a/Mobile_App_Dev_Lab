@@ -1,0 +1,101 @@
+Step 1: npx create-expo-app todolist
+Step 2: cd todolist
+
+—------------------------------------------------------------------------------
+App.js
+
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, FlatList, Switch, StyleSheet } from 'react-native';
+const App = () => {
+  const [tasks, setTasks] = useState([]);
+  const [input, setInput] = useState('');
+  const [darkMode, setDarkMode] = useState(false);
+  const handleAddTask = () => {
+    if (input !== '') {
+      setTasks([...tasks, { id: tasks.length + 1, name: input, isCompleted: false }]);
+      setInput('');
+    }
+  };
+  const handleEditTask = (id) => {
+    const updatedTask = tasks.find((task) => task.id === id);
+    setInput(updatedTask.name);
+  };
+  const handleDeleteTask = (id) => {
+    setTasks(tasks.filter((task) => task.id !== id));
+  };
+  const handleToggleTask = (id) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, isCompleted: !task.isCompleted } : task
+      )
+    );
+  };
+  const handleToggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+  return (
+    <View style={[styles.container, darkMode && styles.darkContainer]}>
+      <TextInput
+        value={input}
+        onChangeText={setInput}
+        placeholder="Add task"
+        style={[styles.input, darkMode && styles.darkInput]}
+      />
+      <Button title="Add task" onPress={handleAddTask} />
+      <FlatList
+        data={tasks}
+        renderItem={({ item }) => (
+          <View style={[styles.task, darkMode && styles.darkTask]}>
+            <Text style={[styles.taskText, darkMode && styles.darkTaskText]}>
+              {item.name}
+            </Text>
+            <Switch value={item.isCompleted} onValueChange={() => handleToggleTask(item.id)} />
+            <Button title="Edit" onPress={() => handleEditTask(item.id)} />
+            <Button title="Delete" onPress={() => handleDeleteTask(item.id)} />
+          </View>
+        )}
+        keyExtractor={(item) => item.id.toString()}
+      />
+      <Switch value={darkMode} onValueChange={handleToggleDarkMode} />
+    </View>
+  );
+};
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingTop: 50,
+  },
+  darkContainer: {
+    backgroundColor: '#2c3e50', // Dark mode background color
+  },
+  input: {
+    borderColor: 'black',
+    borderWidth: 1,
+    padding: 10,
+    marginBottom: 10,
+  },
+  darkInput: {
+    color: '#ecf0f1', // Dark mode text color
+    backgroundColor: '#34495e', // Dark mode input background color
+  },
+  task: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'black',
+  },
+  darkTask: {
+    backgroundColor: '#34495e', // Dark mode task background color
+  },
+  taskText: {
+    flex: 1,
+    paddingRight: 10,
+  },
+  darkTaskText: {
+    color: '#ecf0f1', // Dark mode task text color
+  },
+});
+export default App;
