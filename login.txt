@@ -1,0 +1,135 @@
+Run npx create-expo-app login
+Run cd login
+Run npm install --save react-native-flash-message
+Run npm install expo-location   
+
+import { useEffect, useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { ImageBackground, SafeAreaView, Text, StyleSheet, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
+import * as Location from 'expo-location'; // Import the Location module
+
+const image = { uri: 'https://cdn.pixabay.com/photo/2023/03/21/15/11/ai-generated-7867492_1280.jpg' };
+
+export default function App() {
+
+  const [location, setLocation] = useState(null);
+
+  useEffect(() => {
+    // Request location permissions when the component mounts
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Location permission not granted');
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+  }, []);
+
+
+  const showFlashMessage = () => {
+    if (location) {
+      showMessage({
+        message: `Latitude: ${location.coords.latitude}, Longitude: ${location.coords.longitude}`,
+        type: 'default',
+        backgroundColor: '#000',
+        color: '#fff',
+        duration: 3000,
+        floating: true,
+        style: { paddingVertical: 20, paddingHorizontal: 20 },
+      });
+    } else {
+      Alert.alert('Location not available');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <ImageBackground source={image} style={styles.image} imageStyle={{ opacity: 0.4 }}>
+        <Text style={styles.textval}>Get started</Text>
+        <SafeAreaView>
+          <TextInput placeholder="Your email here!" style={styles.input} />
+          <TextInput secureTextEntry={true} placeholder="Your password here!" style={styles.input} />
+          <View style={styles.to_style}>
+            <TouchableOpacity
+              style={styles.btnContainer}
+              onPress={() => Alert.alert('Login successful!')}
+            >
+              <Text style={styles.btn}>Log In</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+        <TouchableOpacity onPress={showFlashMessage} style={styles.flashContainer}>
+          <Text style={styles.flashbtn}>Retrieve your location details!</Text>
+        </TouchableOpacity>
+        <FlashMessage position="top" />
+        <StatusBar style="auto" />
+      </ImageBackground>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    flex: 1,
+    justifyContent: 'center',
+    resizeMode: 'cover',
+    alignSelf: 'stretch',
+    alignItems: 'center',
+  },
+  textval: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 30,
+    
+  },
+  input: {
+    height: 60,
+    width: 320,
+    margin: 10,
+    padding: 20,
+    borderRadius: 30,
+    backgroundColor: '#fff',
+    
+    opacity: 0.8,
+  },
+  btnContainer: {
+    width: 300,
+    backgroundColor: '#f8f6fe',
+    borderRadius: 20,
+    padding: 10,
+    opacity: 0.8,
+    margin: 20,
+  },
+  flashContainer: {
+    width: 300,
+    backgroundColor: '#f8f6fe',
+    borderRadius: 10,
+    padding: 10,
+    margin: 20,
+  },
+  btn: {
+    fontSize: 18,
+    color: "#000",
+    alignSelf: "center",
+    
+  },
+  flashbtn: {
+    fontSize: 15,
+    color: "#000",
+    alignSelf: "center",
+    
+  },
+  to_style: {
+    alignItems: 'center',
+  }
+});
