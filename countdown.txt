@@ -1,0 +1,86 @@
+npx create-expo-app count
+cd count
+
+App.js
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, Button, StyleSheet, Alert } from 'react-native';
+
+const App = () => {
+  const [seconds, setSeconds] = useState(10);
+  const [isActive, setIsActive] = useState(false);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const countdownRef = useRef(null);
+
+  const toggleTheme = () => {
+    setIsDarkTheme((prevTheme) => !prevTheme);
+  };
+
+  const startCountdown = () => {
+    setIsActive(true);
+  };
+
+  const stopCountdown = () => {
+    setIsActive(false);
+  };
+
+  const resetCountdown = () => {
+    setIsActive(false);
+    setSeconds(10);
+  };
+
+  useEffect(() => {
+    if (isActive) {
+      countdownRef.current = setInterval(() => {
+        setSeconds((prevSeconds) => {
+          if (prevSeconds === 1) {
+            clearInterval(countdownRef.current);
+            Alert.alert('Countdown Complete', 'Timer reached 0!');
+            return 0;
+          }
+          return prevSeconds - 1;
+        });
+      }, 1000);
+    } else {
+      clearInterval(countdownRef.current);
+    }
+
+    return () => {
+      clearInterval(countdownRef.current);
+    };
+  }, [isActive]);
+
+  return (
+    <View style={[styles.container, isDarkTheme && styles.darkTheme]}>
+      <Text style={styles.timer}>{seconds}</Text>
+      <View style={styles.buttonsContainer}>
+        <Button title="Start" onPress={startCountdown} />
+        <Button title="Stop" onPress={stopCountdown} />
+        <Button title="Reset" onPress={resetCountdown} />
+      </View>
+      <Button title="Toggle Theme" onPress={toggleTheme} />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  darkTheme: {
+    backgroundColor: 'black',
+  },
+  timer: {
+    fontSize: 40,
+    marginBottom: 20,
+    color: 'black',
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+});
+
+export default App;
